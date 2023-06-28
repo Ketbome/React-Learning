@@ -449,3 +449,124 @@ interface CarriptoOps {
 ```
 
 ## Narrowing
+
+Basico, mas que nada asegurarse del tipo de dato que se usará
+
+```ts
+function mostrarLongitud(objeto: number | string) {
+  if (typeof objeto === "string") {
+    return objeto.length;
+  }
+  return objeto.toString().length;
+}
+
+mostrarLongitud("1");
+```
+
+En interfaces
+
+```ts
+interface Mario {
+  company: "nintendo"; // o 'nintendo'
+  nombre: string;
+  saltar: () => void;
+}
+
+interface Sonic {
+  company: "Sega";
+  nombre: string;
+  correr: () => void;
+}
+
+type Personaje = Mario | Sonic;
+```
+
+```ts
+// Con compañia
+function jugar(personaje: Personaje) {
+  if (personaje.company === "nintendo") {
+    personaje.saltar();
+    return;
+  }
+  console.log(personaje.correr());
+  return;
+}
+```
+
+```ts
+// type Guard
+function checkIsSonic(personaje: Personaje): personaje is Sonic {
+  return (personaje as Sonic).correr !== undefined;
+}
+
+function jugar(personaje: Personaje) {
+  if (checkIsSonic(personaje)) {
+    personaje.correr();
+    return;
+  }
+  personaje.saltar();
+  return;
+}
+```
+
+## Tipo Never
+
+```ts
+function fn(x: string | number) {
+  if (typeof x === "number") {
+    x.toFixed(2);
+  } else if (typeof x === "string") {
+    x.toLocaleUpperCase();
+  } else {
+    x; // never
+  }
+}
+```
+
+## Instance of class
+
+```ts
+class Avenger {
+  name: string;
+  private powerScore: number; // public por defecto, protected es privado pero solo acceden clases que heredan
+  wonBattles: number = 0;
+
+  constructor(name: string, powerScore: number) {
+    this.name = name;
+    this.powerScore = powerScore;
+  }
+
+  get fullName(): string {
+    return this.name;
+  }
+
+  set power(newPower: number) {
+    if (newPower <= 100) {
+      this.powerScore = newPower;
+    } else {
+      throw new Error("Power score cannot be greater than 100");
+    }
+  }
+}
+
+const avengers = new Avenger("Iron Man", 100);
+avengers.name = "Hulk"; // No tiene Sentido
+```
+
+### Interfaces en clases
+
+```ts
+interface Avenger {
+  name: string;
+  powerScore: number;
+  wonBattle: number;
+  age: number;
+}
+
+class Avenger implements Avenger {
+  constructor(name: string, powerScore: number) {
+    this.name = name;
+    this.powerScore = powerScore;
+  }
+}
+```
